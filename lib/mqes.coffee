@@ -22,6 +22,7 @@ _q_range = (f, v, p) ->
     range: {}
   o.range[f] = {}
   o.range[f][p] = v
+  o
 
 # {field: {$xx:.. $yy}} -> {must:[], must_not: []}
 _query = (q) ->
