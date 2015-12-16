@@ -9,11 +9,11 @@ boo = (q) ->
 
 describe 'simple', () ->
   it 'eq', () ->
-    q = boo mqes.query
+    q = boo mqes.convQuery
       abc: 1
     q.must[0].term.should.be.eql abc: 1
   it 'ne', () ->
-    q = boo mqes.query
+    q = boo mqes.convQuery
       abc: $ne: 1
     q.must_not[0].term.should.be.eql abc: 1
 

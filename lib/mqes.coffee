@@ -92,5 +92,4 @@ convQuery = (q) ->
     delete mst.must_not
   query: filtered: filter: bool: mst
 
-module.exports =
-  query: convQuery
+module.exports = {convQuery}
