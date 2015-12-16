@@ -13,8 +13,8 @@ _q_term = (f, v) ->
 
 _q_terms = (f, v) ->
   o =
-    term: {}
-  o.term[f] = v
+    terms: {}
+  o.terms[f] = v
   o
 
 _q_range = (f, v, p) ->

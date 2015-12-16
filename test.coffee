@@ -4,18 +4,26 @@ should  = require 'should'
 
 mqes    = require './lib/mqes'
 
-boo = (q) ->
+boo = (q, l) ->
+  console.log '%j', q if l
   q.query.filtered.filter.bool
 
 describe 'simple', () ->
   it 'eq', () ->
-    q = boo mqes.convQuery
+    q = mqes.convQuery
       abc: 1
+    q = boo q
     q.must[0].term.should.be.eql abc: 1
+    q = mqes.convQuery
+      dd: $eq: 2
+    q = boo q
+    q.must[0].term.should.be.eql dd: 2
+
   it 'ne', () ->
     q = boo mqes.convQuery
       abc: $ne: 1
     q.must_not[0].term.should.be.eql abc: 1
+
   it 'ge lt', () ->
     q = mqes.convQuery
       abc:
@@ -32,6 +40,14 @@ describe 'simple', () ->
     q.must[0].range.abc.lte.should.be.eql 1
     q.must[1].range.abc.gte.should.be.eql 2
 
-  it 'should later', (done) ->
-    should(200).be.equal 200
-    done()
+  it 'in nin', () ->
+    q = mqes.convQuery
+      abc: $in: [1,2,3]
+    q = boo q
+    q.must[0].terms.abc.should.be.eql [1,2,3]
+
+    q = mqes.convQuery
+      abc: $nin: [1,2,3]
+    q = boo q
+    q.must_not[0].terms.abc.should.be.eql [1,2,3]
+
