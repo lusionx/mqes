@@ -5,91 +5,92 @@ kv = (o) ->
   throw new Error ks.length + ' keys: ' + keys.join ' ' if ks.length is not 1
   key: ks[0], value: o[ks[0]]
 
-term = () ->
+_q_term = (f, v) ->
+  o =
+    term: {}
+  o.term[f] = v
+  o
 
-# {field: {$xx:.. $yy}} -> must:[], must_not: []
+_q_terms = (f, v) ->
+  o =
+    term: {}
+  o.term[f] = v
+  o
+
+_q_range = (f, v, p) ->
+  o =
+    range: {}
+  o.range[f] = {}
+  o.range[f][p] = v
+
+# {field: {$xx:.. $yy}} -> {must:[], must_not: []}
 _query = (q) ->
   must = []
   must_not = []
   sp = kv q
-  f = sp.keys
-  v = sp.value
-  if _.isObject v
-  for $$, vv of sp.value
-    o = {}
+  f = sp.key
+  val = sp.value
+  if _.isString(val) or _.isNumber(val)
+    val =
+      $eq: val
+
+  for $$, vv of val
     switch $$
-      when '$eq' then
-        o.term = {}
-        o.term[f] = vv
-        must.push o
-        continue
-      when '$ne' then
-        o.term = {}
-        o.term[f] = vv
-        must_not.push o
-        continue
-      when '$gt' then
-        o.range = {}
-        o.range['gt'] = vv
-        must.push o
-        continue
-      when '$gte' then
-        o.range = {}
-        o.range['gte'] = vv
-        must.push o
-        continue
-      when '$lt' then
-        o.range = {}
-        o.range['lt'] = vv
-        must.push o
-        continue
-      when '$lte' then
-        o.range = {}
-        o.range['lte'] = vv
-        must.push o
-        continue
-      when '$in' then
-        o.terms = {}
-        o.terms[f] = vv
-        must.push o
-        continue
-      when '$nin' then
-        o.term = {}
-        o.term[f] = vv
-        must_not.push o
-        continue
-      when '$exists' then
+      when '$eq'
+        must.push _q_term f, vv
+      when '$ne'
+        must_not.push _q_term f, vv
+      when '$gt'
+        must.push _q_range f, vv, $$.slice 1
+      when '$gte'
+        must.push _q_range f, vv, $$.slice 1
+      when '$lt'
+        must.push _q_range f, vv, $$.slice 1
+      when '$lte'
+        must.push _q_range f, vv, $$.slice 1
+      when '$in'
+        must.push _q_terms f, vv
+      when '$nin'
+        must_not.push _q_terms f, vv
+      when '$exists'
+        o = {}
         if vv
           o.exists = field: f
         else
           o.missing = field: f
         must.push o
-        continue
-      when '$regex' then
-        o.regexp = {}
+      when '$regex'
+        o =
+          regexp: {}
         o.regexp[f] = vv
         must.push o
-        continue
-      when '$size' then
-        o.script =
-          script: "doc[#{f}].length == param1"
-          params:
-            param1: +vv
+      when '$size'
+        o =
+          script:
+            script: "doc[#{f}].length == param1"
+            params:
+              param1: +vv
         must.push o
-        continue
+      when '$not'
+        o = {}
+        o[f] = vv
+        for x in mst = _query(o).must
+          must_not.push x
       else
         throw new Error 'not suport ' + $$
   {must, must_not}
 
 convQuery = (q) ->
-  must = []
   for k, v of q
-    o = {}
     if k is '$and'
-      continue
-    else # {field: {$xx:.. $yy}}
-
-  query: filtered: filter: bool: must: must
+      mst = {}
+    else
+      mst = _query q
+  if mst.must.length is 0
+    delete mst.must
+  if mst.must_not.length is 0
+    delete mst.must_not
+  query: filtered: filter: bool: mst
 
 module.exports =
   query: convQuery
