@@ -4,7 +4,11 @@
   "description": "conver mongo query to es query",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --compilers coffee:coffee-script/register ./test.coffee"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lusionx/mqes.git"
   },
   "keywords": [
     "mongo",
@@ -12,5 +16,18 @@
     "es"
   ],
   "author": "lusionx@gmail.com",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "lodash": "^3.10.1",
+    "should": "^8.0.1"
+  },
+  "bugs": {
+    "url": "https://github.com/lusionx/mqes/issues"
+  },
+  "homepage": "https://github.com/lusionx/mqes",
+  "dependencies": {
+    "lodash": "^3.10.1",
+    "expectations": "^0.5.2",
+    "should": "^8.0.1"
+  }
 }
