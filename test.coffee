@@ -51,3 +51,19 @@ describe 'simple', () ->
     q = boo q
     q.must_not[0].terms.abc.should.be.eql [1,2,3]
 
+describe '2 field', () ->
+  it 'eq', () ->
+    q = mqes.convQuery
+      abc: 1
+      xx: 2
+    q = boo q
+    q.must[0].term.should.be.eql abc: 1
+    q.must[1].term.should.be.eql xx: 2
+
+  it 'eq & ne', () ->
+    q = mqes.convQuery
+      abc: 1
+      xx: $ne: 2
+    q = boo q
+    q.must[0].term.should.be.eql abc: 1
+    q.must_not[0].term.should.be.eql xx: 2

@@ -82,15 +82,24 @@ _query = (q) ->
   {must, must_not}
 
 convQuery = (q) ->
-  for k, v of q
-    if k is '$and'
-      mst = {}
-    else
-      mst = _query q
-  if mst.must.length is 0
-    delete mst.must
-  if mst.must_not.length is 0
-    delete mst.must_not
-  query: filtered: filter: bool: mst
+  sp = kv q
+  if sp.key is '$and'
+    throw new Error 'require {$and: []}' if not _.isArray sp.value
+    for e in sp.value
+      throw new Error 'not impl'
+  else # { f1: {$xx:, $yy: }, f2: {$xx:, $yy: }}
+    mst = _.map q, (v, k) ->
+      o = {}
+      o[k] = v
+      _query o
+    must = []
+    must_not = []
+    _.each mst, (e) ->
+      must = must.concat e.must
+      must_not = must_not.concat e.must_not
+    mst = {}
+    mst.must = must if must.length
+    mst.must_not = must_not if must_not.length
+    query: filtered: filter: bool: mst
 
 module.exports = {convQuery}
