@@ -67,3 +67,28 @@ describe '2 field', () ->
     q = boo q
     q.must[0].term.should.be.eql abc: 1
     q.must_not[0].term.should.be.eql xx: 2
+
+describe '$and', () ->
+  it '1 field', () ->
+    c = []
+    c.push
+      abc: $lt: 1
+    c.push
+      abc: $gt: 2
+    q = mqes.convQuery $and: c
+    q = boo q
+    q.must[0].range.abc.should.be.eql lt: 1
+    q.must[1].range.abc.should.be.eql gt: 2
+
+  it '2 field', () ->
+    c = []
+    c.push
+      abc: $lt: 1
+    c.push
+      abc: $gt: 2
+      f1: 'aa'
+    q = mqes.convQuery $and: c
+    q = boo q
+    q.must[0].range.abc.should.be.eql lt: 1
+    q.must[1].range.abc.should.be.eql gt: 2
+    q.must[2].term.should.be.eql f1: 'aa'

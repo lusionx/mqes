@@ -85,21 +85,26 @@ convQuery = (q) ->
   sp = kv q
   if sp.key is '$and'
     throw new Error 'require {$and: []}' if not _.isArray sp.value
-    for e in sp.value
-      throw new Error 'not impl'
+    mst = []
+    _.each sp.value, (qq) ->
+      mst = mst.concat _.map qq, (v, k) ->
+        o  = {}
+        o[k] = v
+        _query o
+
   else # { f1: {$xx:, $yy: }, f2: {$xx:, $yy: }}
     mst = _.map q, (v, k) ->
-      o = {}
+      o  = {}
       o[k] = v
       _query o
-    must = []
-    must_not = []
-    _.each mst, (e) ->
-      must = must.concat e.must
-      must_not = must_not.concat e.must_not
-    mst = {}
-    mst.must = must if must.length
-    mst.must_not = must_not if must_not.length
-    query: filtered: filter: bool: mst
+  must = []
+  must_not = []
+  _.each mst, (e) ->
+    must = must.concat e.must
+    must_not = must_not.concat e.must_not
+  mst = {}
+  mst.must = must if must.length
+  mst.must_not = must_not if must_not.length
+  query: filtered: filter: bool: mst
 
 module.exports = {convQuery}
