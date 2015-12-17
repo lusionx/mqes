@@ -4,8 +4,14 @@
   "description": "conver mongo query to es query",
   "main": "lib/mqes.js",
   "scripts": {
-    "test": "mocha --compilers coffee:coffee-script/register ./test.coffee"
+    "test": "mocha --compilers coffee:coffee-script/register ./test.coffee",
+    "prepublish": "coffee -c lib/*.coffee"
   },
+  "files": [
+    "package.json",
+    "README.md",
+    "lib/mqes.js"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/lusionx/mqes.git"
