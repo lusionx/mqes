@@ -8,6 +8,7 @@ boo = (q, l) ->
   console.log '%j', q if l
   q.query.filtered.filter.bool
 
+
 describe 'simple', () ->
   it 'eq', () ->
     q = mqes.convQuery
@@ -51,6 +52,31 @@ describe 'simple', () ->
     q = boo q
     q.must_not[0].terms.abc.should.be.eql [1,2,3]
 
+  it '$not', () ->
+    q = mqes.convQuery
+      abc: $not: $in: [1,2,3]
+    q = boo q
+    q.must_not[0].terms.abc.should.be.eql [1,2,3]
+
+  it '$exists yes', () ->
+    q = mqes.convQuery
+      abc: $exists: yes
+    q = boo q
+    q.must[0].exists.field.should.be.eql 'abc'
+
+  it '$exists no', () ->
+    q = mqes.convQuery
+      abc: $exists: no
+    q = boo q
+    q.must[0].missing.field.should.be.eql 'abc'
+
+  it '$regex', () ->
+    q = mqes.convQuery
+      abc: $regex: 's.*y'
+    q = boo q, 0
+    q.must[0].regexp.should.be.eql abc: 's.*y'
+
+
 describe '2 field', () ->
   it 'eq', () ->
     q = mqes.convQuery
@@ -67,6 +93,27 @@ describe '2 field', () ->
     q = boo q
     q.must[0].term.should.be.eql abc: 1
     q.must_not[0].term.should.be.eql xx: 2
+
+  it 'not: eq & ne', () ->
+    q = mqes.convQuery
+      abc: $not: $eq: 1
+      xx: $ne: 2
+    q = boo q
+    q.must_not[0].term.should.be.eql abc: 1
+    q.must_not[1].term.should.be.eql xx: 2
+
+
+describe '3 field', () ->
+  it 'not 2: eq & ne', () ->
+    q = mqes.convQuery
+      abc: $not: $eq: 1
+      xx: $not: $eq: 2
+      yy: $eq: 2
+    q = boo q
+    q.must_not[0].term.should.be.eql abc: 1
+    q.must_not[1].term.should.be.eql xx: 2
+    q.must[0].term.should.be.eql yy: 2
+
 
 describe '$and', () ->
   it '1 field', () ->

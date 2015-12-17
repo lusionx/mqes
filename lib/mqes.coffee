@@ -63,20 +63,20 @@ _query = (q) ->
       when '$regex'
         o =
           regexp: {}
-        o.regexp[f] = vv
+        o.regexp[f] = vv.toString()
         must.push o
       when '$size'
         o =
           script:
             script: "doc[#{f}].length == param1"
             params:
-              param1: +vv
+              param1: +vv or 0
         must.push o
       when '$not'
         o = {}
         o[f] = vv
         for x in mst = _query(o).must
-          must_not.push x
+          must_not = must_not.concat x
       else
         throw new Error 'not suport ' + $$
   {must, must_not}

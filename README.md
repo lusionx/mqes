@@ -15,4 +15,7 @@
 - $exists
 - $size
 - $and
+- $not
 
+### 不支持
+- $or
