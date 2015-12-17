@@ -1,6 +1,6 @@
 {
   "name": "mqes",
-  "version": "1.0.0",
+  "version": "1.7.0",
   "description": "conver mongo query to es query",
   "main": "lib/mqes.js",
   "scripts": {
@@ -13,12 +13,17 @@
   "keywords": [
     "mongo",
     "query",
+    "filter",
+    "elastic",
+    "elasticsearch",
     "es"
   ],
   "author": "lusionx@gmail.com",
   "license": "MIT",
   "devDependencies": {
-    "should": "^8.0.1"
+    "should": "^8.0.1",
+    "coffee-script": "1.9.3",
+    "mocha": "2.3.4"
   },
   "bugs": {
     "url": "https://github.com/lusionx/mqes/issues"
