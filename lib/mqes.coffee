@@ -72,6 +72,14 @@ _query = (q) ->
             params:
               param1: +vv or 0
         must.push o
+      when '$text'
+        o = fquery:
+          _cache: yes
+          query:
+            query_string:
+              fields: [f]
+              query: vv
+         must.push o
       when '$not'
         o = {}
         o[f] = vv

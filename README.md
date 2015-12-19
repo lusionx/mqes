@@ -19,5 +19,16 @@
 - $and
 - $not
 
+### 变相支持
+
+- $text:
+```
+{tags_string:{$text: '1boy'}}
+
+{tags_string:{$text: '1boy head'}} // eq: tags_string like 1boy or head
+
+{tags_string:{$text: '1boy AND head'}} // eq: tags_string like 1boy AND head
+```
+
 ### 不支持
 - $or

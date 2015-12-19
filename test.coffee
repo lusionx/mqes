@@ -76,6 +76,15 @@ describe 'simple', () ->
     q = boo q, 0
     q.must[0].regexp.should.be.eql abc: 's.*y'
 
+  it '$text', () ->
+    q = mqes.convQuery
+      abc: 1
+      tags_string: $text: '1girl'
+    q = boo q, 0
+    q.must[0].term.should.be.eql abc: 1
+    q.must[1].fquery.query.query_string.query.should.be.eql '1girl'
+    q.must[1].fquery.query.query_string.fields[0].should.be.eql 'tags_string'
+
 
 describe '2 field', () ->
   it 'eq', () ->
