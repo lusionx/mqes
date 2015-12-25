@@ -181,3 +181,35 @@ describe '$or test', () ->
     q = boo q, no
     q.should[0].range.abc.should.be.eql lt: 1
     q.should[1].range.abc.should.be.eql gt: 2
+
+
+describe '$or > $not', () ->
+  it '1 field', () ->
+    c = []
+    c.push
+      abc: $lt: 1
+    c.push
+      abc: $not: $gt: 2
+    q = mqes.convQuery $or: c
+    q = boo q, no
+    q.should[0].range.abc.should.be.eql lt: 1
+    q.should[1].bool.must_not[0].range.abc.should.be.eql gt: 2
+
+describe '$or > $or', () ->
+  it '1 field', () ->
+    c = []
+    c.push
+      abc: $lt: 1
+    c.push
+      abc: $gt: 2
+    c.push $or: [
+        xx: 11
+      ,
+        yy: 22
+    ]
+    q = mqes.convQuery $or: c
+    q = boo q, yes
+    q.should[0].range.abc.should.be.eql lt: 1
+    q.should[1].range.abc.should.be.eql gt: 2
+    q.should[2].bool.should[0].term.should.be.eql xx: 11
+    q.should[2].bool.should[1].term.should.be.eql yy: 22

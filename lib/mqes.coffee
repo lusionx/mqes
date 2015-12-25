@@ -125,15 +125,15 @@ _or = (arr) ->
           must_not: []
       else if k is '$or'
         mst.push
-          must: []
+          must: [_or(v)]
           must_not: []
       else
         mst.push _query _.pick q, [k]
   bool =
     should: _.flatten _.map mst, (e) -> e.must
-    should_not: _.flatten _.map mst, (e) -> e.must_not
-  delete bool.should if 0 is bool.should.length
-  delete bool.should_not if 0 is bool.should_not.length
+  should_not = _.flatten _.map mst, (e) -> e.must_not
+  _.each should_not, (nt) ->
+    bool.should.push bool: must_not: [nt]
   {bool}
 
 convQuery = (q) ->
