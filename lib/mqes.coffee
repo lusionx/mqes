@@ -153,6 +153,8 @@ convQuery = (q) ->
     filter.bool =
       must: _.flatten _.map mst, (e) -> e.must
       must_not: _.flatten _.map mst, (e) -> e.must_not
+    delete filter.bool.must if 0 is filter.bool.must.length
+    delete filter.bool.must_not if 0 is filter.bool.must_not.length
   query: filtered: filter: filter
 
 module.exports = {convQuery}
