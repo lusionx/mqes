@@ -102,7 +102,7 @@ _and = (arr) ->
           must_not: []
       else if k is '$or'
         mst.push
-          must: []
+          must: [_or v]
           must_not: []
       else
         mst.push _query _.pick q, [k]
@@ -125,7 +125,7 @@ _or = (arr) ->
           must_not: []
       else if k is '$or'
         mst.push
-          must: [_or(v)]
+          must: [_or v ]
           must_not: []
       else
         mst.push _query _.pick q, [k]

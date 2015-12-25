@@ -195,6 +195,7 @@ describe '$or > $not', () ->
     q.should[0].range.abc.should.be.eql lt: 1
     q.should[1].bool.must_not[0].range.abc.should.be.eql gt: 2
 
+
 describe '$or > $or', () ->
   it '1 field', () ->
     c = []
@@ -208,8 +209,45 @@ describe '$or > $or', () ->
         yy: 22
     ]
     q = mqes.convQuery $or: c
-    q = boo q, yes
+    q = boo q, no
     q.should[0].range.abc.should.be.eql lt: 1
     q.should[1].range.abc.should.be.eql gt: 2
     q.should[2].bool.should[0].term.should.be.eql xx: 11
     q.should[2].bool.should[1].term.should.be.eql yy: 22
+
+
+describe '$and with $or', () ->
+  it '$and > $or', () ->
+    c = []
+    c.push
+      abc: $lt: 1
+    c.push
+      abc: $gt: 2
+    c.push $or: [
+        xx: 11
+      ,
+        yy: 22
+    ]
+    q = mqes.convQuery $and: c
+    q = boo q, no
+    q.must[0].bool.must[0].range.abc.should.be.eql lt: 1
+    q.must[0].bool.must[1].range.abc.should.be.eql gt: 2
+    q.must[0].bool.must[2].bool.should[0].term.should.be.eql xx: 11
+    q.must[0].bool.must[2].bool.should[1].term.should.be.eql yy: 22
+  it '$or > $and', () ->
+    c = []
+    c.push
+      abc: $lt: 1
+    c.push
+      abc: $gt: 2
+    c.push $and: [
+        xx: 11
+      ,
+        yy: 22
+    ]
+    q = mqes.convQuery $or: c
+    q = boo q, no
+    q.should[0].range.abc.should.be.eql lt: 1
+    q.should[1].range.abc.should.be.eql gt: 2
+    q.should[2].bool.must[0].term.should.be.eql xx: 11
+    q.should[2].bool.must[1].term.should.be.eql yy: 22

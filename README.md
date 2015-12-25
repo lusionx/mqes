@@ -17,7 +17,10 @@
 - $exists
 - $size
 - $and
+- $or
 - $not
+- $and $or $not 嵌套
+
 
 ### 变相支持
 
@@ -31,4 +34,4 @@
 ```
 
 ### 不支持
-- $or
+- $nor
