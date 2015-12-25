@@ -115,6 +115,26 @@ _and = (arr) ->
 
 _or = (arr) ->
   throw new Error '$or: value must Array' if not _.isArray arr
+  mst = []
+  _.each arr, (q) ->
+    ## q {f1: {$x: x, $y: y}, f2: {$x:x, $y: y}}
+    _.each q, (v, k) ->
+      if k is '$and'
+        mst.push
+          must: [_and v]
+          must_not: []
+      else if k is '$or'
+        mst.push
+          must: []
+          must_not: []
+      else
+        mst.push _query _.pick q, [k]
+  bool =
+    should: _.flatten _.map mst, (e) -> e.must
+    should_not: _.flatten _.map mst, (e) -> e.must_not
+  delete bool.should if 0 is bool.should.length
+  delete bool.should_not if 0 is bool.should_not.length
+  {bool}
 
 convQuery = (q) ->
   filter = {}
@@ -124,8 +144,8 @@ convQuery = (q) ->
       filter.bool =
         must: [_and(v)]
     else if k is '$or'
-      filter.bool
-        should: [_or(v)]
+      filter.bool =
+        should: _or(v).bool.should
     else
       mst.push _query _.pick q, [k]
 

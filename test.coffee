@@ -149,6 +149,7 @@ describe '$and test', () ->
     q.must[0].bool.must[1].range.abc.should.be.eql gt: 2
     q.must[0].bool.must[2].term.should.be.eql f1: 'aa'
 
+
 describe '$and > $and', () ->
   it '1 field', () ->
     c = []
@@ -169,3 +170,14 @@ describe '$and > $and', () ->
     q.must[0].bool.must[2].bool.must[1].term.should.be.eql yy: 22
 
 
+describe '$or test', () ->
+  it '1 field', () ->
+    c = []
+    c.push
+      abc: $lt: 1
+    c.push
+      abc: $gt: 2
+    q = mqes.convQuery $or: c
+    q = boo q, no
+    q.should[0].range.abc.should.be.eql lt: 1
+    q.should[1].range.abc.should.be.eql gt: 2
