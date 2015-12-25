@@ -86,33 +86,53 @@ _query = (q) ->
         for x in mst = _query(o).must
           must_not = must_not.concat x
       else
-        throw new Error 'not suport ' + $$
+        throw new Error 'not suport ' + $$ + ' ' + JSON.stringify vv
   {must, must_not}
 
-convQuery = (q) ->
-  sp = kv q
-  if sp.key is '$and'
-    throw new Error 'require {$and: []}' if not _.isArray sp.value
-    mst = []
-    _.each sp.value, (qq) ->
-      mst = mst.concat _.map qq, (v, k) ->
-        o  = {}
-        o[k] = v
-        _query o
 
-  else # { f1: {$xx:, $yy: }, f2: {$xx:, $yy: }}
-    mst = _.map q, (v, k) ->
-      o  = {}
-      o[k] = v
-      _query o
-  must = []
-  must_not = []
-  _.each mst, (e) ->
-    must = must.concat e.must
-    must_not = must_not.concat e.must_not
-  mst = {}
-  mst.must = must if must.length
-  mst.must_not = must_not if must_not.length
-  query: filtered: filter: bool: mst
+_and = (arr) ->
+  throw new Error '$and: value must Array' if not _.isArray arr
+  mst = []
+  _.each arr, (q) ->
+    ## q {f1: {$x: x, $y: y}, f2: {$x:x, $y: y}}
+    _.each q, (v, k) ->
+      if k is '$and'
+        mst.push
+          must: [_and v]
+          must_not: []
+      else if k is '$or'
+        mst.push
+          must: []
+          must_not: []
+      else
+        mst.push _query _.pick q, [k]
+  bool =
+    must: _.flatten _.map mst, (e) -> e.must
+    must_not: _.flatten _.map mst, (e) -> e.must_not
+  delete bool.must if 0 is bool.must.length
+  delete bool.must_not if 0 is bool.must_not.length
+  {bool}
+
+_or = (arr) ->
+  throw new Error '$or: value must Array' if not _.isArray arr
+
+convQuery = (q) ->
+  filter = {}
+  mst = []
+  _.each q, (v, k) ->
+    if k is '$and'
+      filter.bool =
+        must: [_and(v)]
+    else if k is '$or'
+      filter.bool
+        should: [_or(v)]
+    else
+      mst.push _query _.pick q, [k]
+
+  if mst.length
+    filter.bool =
+      must: _.flatten _.map mst, (e) -> e.must
+      must_not: _.flatten _.map mst, (e) -> e.must_not
+  query: filtered: filter: filter
 
 module.exports = {convQuery}
