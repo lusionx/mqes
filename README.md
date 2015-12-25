@@ -35,3 +35,6 @@
 
 ### 不支持
 - $nor
+
+### 测试
+> `curl -XPOST -H "Content-Type: application/json" --data '{"width":1}' http://bili.xroom.3322.org/api/dev/mq2es`
