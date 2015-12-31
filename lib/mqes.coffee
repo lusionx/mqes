@@ -31,7 +31,7 @@ _query = (q) ->
   sp = kv q
   f = sp.key
   val = sp.value
-  if _.isString(val) or _.isNumber(val)
+  if _.isString(val) or _.isNumber(val) or _.isBoolean(val)
     val =
       $eq: val
 

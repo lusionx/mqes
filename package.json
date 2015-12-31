@@ -1,6 +1,6 @@
 {
   "name": "mqes",
-  "version": "1.7.4",
+  "version": "1.7.5",
   "description": "conver mongo query to es query",
   "main": "lib/mqes.js",
   "scripts": {

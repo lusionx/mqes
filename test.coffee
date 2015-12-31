@@ -19,6 +19,10 @@ describe 'simple', () ->
       dd: $eq: 2
     q = boo q
     q.must[0].term.should.be.eql dd: 2
+    q = mqes.convQuery
+      dd: no
+    q = boo q
+    q.must[0].term.should.be.eql dd: no
 
   it 'ne', () ->
     q = boo mqes.convQuery
