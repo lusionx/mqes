@@ -255,3 +255,20 @@ describe '$and with $or', () ->
     q.should[1].range.abc.should.be.eql gt: 2
     q.should[2].bool.must[0].term.should.be.eql xx: 11
     q.should[2].bool.must[1].term.should.be.eql yy: 22
+
+
+describe '$script', () ->
+  it '1 field', () ->
+    v = "rint(doc['query.createdAt'].value/1000) % 10 == 1"
+    q = mqes.convQuery {account: '2214542774', script: $script: v}
+    q = boo q, no
+    q.must[1].script.script.should.be.eql v
+  it 'with params', () ->
+    v =
+      script: "rint(doc['query.createdAt'].value/1000) % 10 == p1"
+      params: p1: 2
+    q = mqes.convQuery {account: '2214542774', xx: $script: v}
+    q = boo q, no
+    q.must[1].script.script.should.be.eql v.script
+    q.must[1].script.params.should.be.eql v.params
+    q.must[1].script._cache.should.be.eql yes

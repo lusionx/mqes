@@ -33,6 +33,14 @@
 {tags_string:{$text: '1boy AND head'}} // eq: tags_string like 1boy AND head
 ```
 
+- $script:
+```
+{any:{$script: "doc['num1'].value > 1"}} // 1: any 部分写什么都行, 仅是为了统一语法中的先写字段名的规则, 转化后会忽略,
+{anx:{$script: "doc['num1'].value > 1"}} // 2: 与上行是等价的
+{any:{$script: {script: "doc['num1'].value > p1", params: {p1: 2}}}} // 3: 可以设置参数
+```
+
+
 ### 不支持
 - $nor
 

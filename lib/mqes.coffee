@@ -51,6 +51,17 @@ _query = (q) ->
         must.push _q_range f, vv, $$.slice 1
       when '$in'
         must.push _q_terms f, vv
+      when '$script'
+        if _.isString vv
+          must.push script: script: vv
+        else if (ss = vv.script) and pp = vv.params
+          o =
+            script: ss
+            params: pp
+            _cache: yes
+          must.push {script: o}
+        else
+          throw new Error 'cant conv ' + JSON.parse vv
       when '$nin'
         must_not.push _q_terms f, vv
       when '$exists'
